@@ -1,0 +1,38 @@
+recreate cookie clicker in python
+
+import time
+
+# define variables and set starting values
+cookies = 0
+cps = 1
+grandmas = 0
+
+# define functions
+def buyGrandma():
+    global cookies, grandmas
+    if cookies >= 100:
+        cookies -= 100
+        grandmas += 1
+        print("Grandma purchased! You have {} grandmas.".format(grandmas))
+    else:
+        print("You don't have enough cookies! You need 100.")
+
+def wait():
+    global cookies
+    time.sleep(1)
+    cookies += cps
+    print("You now have {} cookies.".format(cookies))
+
+# main loop
+while True:
+    wait()
+    print("What do you want to do?")
+    action = input("You can type 'buy grandma', 'status', or 'quit': ")
+    if action == "buy grandma":
+        buyGrandma()
+    elif action == "status":
+        print("You have {} cookies and {} grandmas.".format(cookies, grandmas))
+    elif action == "quit":
+        break
+    else:
+        print("I don't understand that command.")
