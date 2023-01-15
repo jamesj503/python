@@ -1,0 +1,80 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+#define constants
+GRAV_CONSTANT = 6.67408e-11 #m3 kg-1 s-2
+
+#define classes
+class Body:
+  
+  def __init__(self, mass, x, y):
+    self.mass = mass
+    self.x = x
+    self.y = y
+    self.vx = 0
+    self.vy = 0
+    self.force_x = 0
+    self.force_y = 0
+  
+  def apply_force(self, force_x, force_y):
+    self.force_x += force_x
+    self.force_y += force_y
+  
+  def update_position(self, t):
+    #update velocity
+    self.vx += self.force_x / self.mass * t
+    self.vy += self.force_y / self.mass * t
+    #update position
+    self.x += self.vx * t
+    self.y += self.vy * t
+    #reset forces
+    self.force_x = 0
+    self.force_y = 0
+
+#define functions
+def calculate_gravity_force(body1, body2):
+  #calculate distance between bodies
+  dx = body2.x - body1.x
+  dy = body2.y - body1.y
+  r = math.sqrt(dx**2 + dy**2)
+  #calculate gravitational force
+  F = GRAV_CONSTANT * body1.mass * body2.mass / r**2
+  #calculate force components
+  Fx = F * dx / r
+  Fy = F * dy / r
+  #apply force to bodies
+  body1.apply_force(-Fx, -Fy)
+  body2.apply_force(Fx, Fy)
+
+#create bodies
+bodies = [
+  Body(1e12, 0, 0), #Sun
+  Body(1e2, 3e11, 0) #Earth
+]
+
+#simulate
+dt = 3600 #seconds
+t_max = 3600 * 24 * 365 #one year
+t = 0
+
+x = [b.x for b in bodies]
+y = [b.y for b in bodies]
+plt.plot(x, y, 'o')
+
+while t < t_max:
+  #calculate forces
+  for i in range(len(bodies)):
+    for j in range(i+1, len(bodies)):
+      calculate_gravity_force(bodies[i], bodies[j])
+  #update positions
+  for body in bodies:
+    body.update_position(dt)
+  #update time
+  t += dt
+  #update plot
+  x = [b.x for b in bodies]
+  y = [b.y for b in bodies]
+  plt.plot(x, y, 'o')
+
+plt.show()
